@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { motion, useSpring } from "framer-motion";
 import { GridBackgroundDemo } from "@/components/blockbackground";
 import ProjectNavbar from "@/components/navbar";
@@ -13,7 +13,7 @@ const projects = [
     tech: ["Next.js", "MongoDB", "OpenAI API Key", "TailwindCSS"],
     link: "https://github.com/SATVIKsynopsis/quiz-adaptable",
     demo: "https://quiztie.netlify.app",
-    preview: "/quiztie.png",   // ✅ just path
+    preview: "/quiztie.png",
   },
   {
     title: "Vendor to Supplier connecting platform",
@@ -28,13 +28,38 @@ const projects = [
     ],
     link: "https://github.com/SATVIKsynopsis/vendor-sahayak",
     demo: "https://vendorsahayak.netlify.app",
-    preview: "/vendor.png",  // ✅ just path
+    preview: "/vendor.png",
   },
 ];
 
-
 export default function Projects() {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const [previewPosition, setPreviewPosition] = useState({ top: 0, left: 0 });
+  const projectRefs = useRef<(HTMLDivElement | null)[]>([]);
+
+  useEffect(() => {
+    // Set initial preview position based on the first project card
+    if (projectRefs.current[0]) {
+      const rect = projectRefs.current[0].getBoundingClientRect();
+      setPreviewPosition({
+        top: rect.top - 180,
+        left: rect.left + rect.width / 2 - 160
+      });
+    }
+  }, []);
+
+  const handleHover = (index: number) => {
+    setHoveredIndex(index);
+    
+    // Position the preview above the hovered project card
+    if (projectRefs.current[index]) {
+      const rect = projectRefs.current[index].getBoundingClientRect();
+      setPreviewPosition({
+        top: rect.top - 180,
+        left: rect.left + rect.width / 2 - 160
+      });
+    }
+  };
 
   return (
     <>
@@ -45,6 +70,44 @@ export default function Projects() {
 
         {/* Subtle overlay */}
         <div className="absolute inset-0 bg-black/20" />
+
+        {/* Global Preview Image (fixed position above project cards) */}
+        {hoveredIndex !== null && (
+          <motion.div
+            className="fixed z-50 pointer-events-none"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{
+              opacity: 1,
+              y: 0,
+            }}
+            exit={{ opacity: 0, y: 20 }}
+            transition={{ duration: 0.3, ease: "easeOut" }}
+            style={{
+              top: `${previewPosition.top}px`,
+              left: `${previewPosition.left}px`,
+            }}
+          >
+            <div className="relative">
+              {/* Glow effect */}
+              <div className="absolute inset-0 bg-white/20 rounded-xl blur-lg" />
+
+              {/* Image container */}
+              <div className="relative rounded-xl overflow-hidden border border-white/30 backdrop-blur-md shadow-2xl">
+                <Image
+                  src={projects[hoveredIndex].preview}
+                  alt={`${projects[hoveredIndex].title} preview`}
+                  width={320}
+                  height={192}
+                  className="w-80 h-48 object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
+                <div className="absolute bottom-3 left-3 text-white text-sm font-medium">
+                  {projects[hoveredIndex].title}
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
 
         {/* Foreground Content */}
         <div className="absolute inset-0 flex items-center justify-center px-6 py-20">
@@ -85,14 +148,18 @@ export default function Projects() {
             {/* Projects Grid */}
             <div className="grid gap-8 md:grid-cols-2 w-full">
               {projects.map((project, index) => (
-                <ProjectCard
+                <div
                   key={index}
-                  project={project}
-                  index={index}
-                  isHovered={hoveredIndex === index}
-                  onHover={() => setHoveredIndex(index)}
-                  onLeave={() => setHoveredIndex(null)}
-                />
+                  ref={(el) => (projectRefs.current[index] = el)}
+                >
+                  <ProjectCard
+                    project={project}
+                    index={index}
+                    isHovered={hoveredIndex === index}
+                    onHover={() => handleHover(index)}
+                    onLeave={() => setHoveredIndex(null)}
+                  />
+                </div>
               ))}
             </div>
           </div>
@@ -147,38 +214,6 @@ const ProjectCard = ({
       className="group cursor-pointer relative"
       style={{ perspective: "1000px" }}
     >
-      {/* Floating Project Preview Image */}
-      <motion.div
-        className="absolute -top-32 left-1/2 transform -translate-x-1/2 z-30 pointer-events-none"
-        initial={{ opacity: 0, y: 20, scale: 0.8 }}
-        animate={{
-          opacity: isHovered ? 1 : 0,
-          y: isHovered ? 0 : 20,
-          scale: isHovered ? 1 : 0.8,
-        }}
-        transition={{ duration: 0.3, ease: "easeOut" }}
-      >
-        <div className="relative">
-          {/* Glow effect */}
-          <div className="absolute inset-0 bg-white/20 rounded-xl blur-lg" />
-
-          {/* Image container */}
-          <div className="relative rounded-xl overflow-hidden border border-white/30 backdrop-blur-md shadow-2xl">
-            <Image
-  src={project.preview}
-  alt={`${project.title} preview`}
-  width={320}
-  height={192}
-  className="w-80 h-48 object-cover"
-/>
-            <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
-            <div className="absolute bottom-3 left-3 text-white text-sm font-medium">
-              {project.title}
-            </div>
-          </div>
-        </div>
-      </motion.div>
-
       {/* Main Card */}
       <motion.div
         style={{
@@ -364,4 +399,4 @@ const ProjectCard = ({
       </motion.div>
     </motion.div>
   );
-};
+}
