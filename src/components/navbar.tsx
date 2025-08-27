@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import React, { useState, useEffect } from 'react';
 import { Menu, X, Home, User, Briefcase, Code, Mail, ChevronDown, Phone, MapPin, Send, Github, Linkedin, Twitter } from 'lucide-react';
@@ -29,6 +29,7 @@ export default function ProjectNavbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
   const [isContactOpen, setIsContactOpen] = useState(false);
+  const [scrollProgress, setScrollProgress] = useState(0);
   const pathname = usePathname();
 
   useEffect(() => {
@@ -36,6 +37,12 @@ export default function ProjectNavbar() {
     
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50);
+      
+      // Calculate scroll progress
+      const scrollTop = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const scrollPercent = scrollTop / docHeight * 100;
+      setScrollProgress(Math.min(100, scrollPercent));
     };
 
     const currentItem = navigationItems.find(item => item.href === pathname);
@@ -43,7 +50,12 @@ export default function ProjectNavbar() {
       setActiveSection(currentItem.name);
     }
 
+    // Only add scroll event listener on client side
     window.addEventListener('scroll', handleScroll);
+    
+    // Initial calculation
+    handleScroll();
+    
     return () => window.removeEventListener('scroll', handleScroll);
   }, [pathname]);
 
@@ -347,15 +359,17 @@ export default function ProjectNavbar() {
         </div>
       )}
 
-      {/* Scroll Progress Bar */}
-      <div className="fixed top-0 left-0 right-0 z-40 h-1">
-        <div 
-          className="h-full bg-gradient-to-r from-neutral-600 via-neutral-500 to-neutral-600 transition-all duration-300 ease-out"
-          style={{ 
-            width: `${Math.min(100, (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100)}%` 
-          }}
-        ></div>
-      </div>
+      {/* Scroll Progress Bar - Only render if we're on the client */}
+      {typeof window !== 'undefined' && (
+        <div className="fixed top-0 left-0 right-0 z-40 h-1">
+          <div 
+            className="h-full bg-gradient-to-r from-neutral-600 via-neutral-500 to-neutral-600 transition-all duration-300 ease-out"
+            style={{ 
+              width: `${scrollProgress}%` 
+            }}
+          ></div>
+        </div>
+      )}
 
       {/* Spacer for fixed navbar */}
       <div className="h-16"></div>
