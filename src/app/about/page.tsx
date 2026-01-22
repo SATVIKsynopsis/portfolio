@@ -1,30 +1,38 @@
 "use client";
 
 import { motion } from "framer-motion";
-import React, { useState, useEffect } from "react";
+import React, { Suspense } from "react";
 import Image from "next/image";
+import dynamic from "next/dynamic";
 import ProjectNavbar from "@/components/navbar";
+
+const ProfileScene3D = dynamic(() => import("@/components/3d/ProfileScene3D"), { ssr: false });
+const Scene3DBackground = dynamic(() => import("@/components/3d/Scene3DBackground"), { ssr: false });
 
 const skills = [
   {
     category: "Frontend Development",
     technologies: ["Next.js", "React", "JavaScript", "TypeScript", "Tailwind CSS", "HTML/CSS"],
     icon: "💻",
+    color: "from-purple-500 to-pink-500",
   },
   {
     category: "Backend Development",
     technologies: ["Node.js", "Express", "MongoDB", "PostgresSQL", "REST APIs", "Authentication"],
     icon: "⚙️",
+    color: "from-cyan-500 to-blue-500",
   },
   {
     category: "Tools & Technologies",
     technologies: ["Git", "VS Code", "Figma", "Webstorm", "Pycharm", "Clion"],
     icon: "🛠️",
+    color: "from-pink-500 to-rose-500",
   },
   {
     category: "DSA",
     technologies: ["C", "C++", "Python"],
-    icon: "🛠️",
+    icon: "🧮",
+    color: "from-yellow-500 to-orange-500",
   }
 ];
 
@@ -47,109 +55,93 @@ const personalInfo = {
   bio: "A passionate software developer with a keen interest in creating innovative web solutions. I enjoy turning complex problems into simple, beautiful and intuitive designs. When I'm not coding, you can find me exploring new technologies, contributing to open source, or enjoying outdoor activities."
 };
 
-// Create a client-side only wrapper for GridBackgroundDemo
-const GridBackground = () => {
-  const [isClient, setIsClient] = useState(false);
-
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
-
-  if (!isClient) {
-    return (
-      <div className="absolute inset-0 z-0 bg-black" />
-    );
-  }
-
-  // Dynamically import GridBackgroundDemo only on client side
-  const GridBackgroundDemo = require("@/components/blockbackground").GridBackgroundDemo;
-  
-  return (
-    <div className="absolute inset-0 z-0">
-      <GridBackgroundDemo />
-    </div>
-  );
-};
-
-export default function ExperiencePage() {
+export default function AboutPage() {
   return (
     <>  
       <ProjectNavbar />
-      <div className="relative min-h-screen w-full bg-black text-neutral-200 overflow-hidden">
-        {/* Grid Background for the entire page - Client side only */}
-        <GridBackground />
-        
-        {/* Subtle overlay to match grid theme */}
-        <div className="absolute inset-0 bg-black/20 z-1" />
+      <div className="relative min-h-screen w-full bg-black text-white overflow-hidden">
+        {/* 3D Background */}
+        <Suspense fallback={<div className="absolute inset-0 bg-gradient-to-b from-black via-purple-900/20 to-black" />}>
+          <Scene3DBackground />
+        </Suspense>
 
         {/* Content */}
-        <div className="relative z-10 max-w-6xl mx-auto px-6 py-24">
-          {/* Profile Header */}
+        <div className="relative z-10 max-w-7xl mx-auto px-6 py-24">
+          {/* Hero Section */}
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
-            className="flex flex-col md:flex-row items-center justify-between mb-20 gap-8"
+            className="flex flex-col lg:flex-row items-center justify-between mb-32 gap-16"
           >
-            <div className="flex-1">
-              <motion.h1
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
+            <div className="flex-1 space-y-8">
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.6, delay: 0.2 }}
-                className="text-5xl sm:text-6xl font-bold mb-4 text-neutral-100"
               >
-                About Me
-              </motion.h1>
-              <motion.p 
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.6, delay: 0.4 }}
-                className="text-lg text-neutral-400 mb-6 max-w-2xl"
-              >
-                From Bokaro to building digital experiences that matter
-              </motion.p>
-              <motion.p 
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.6, delay: 0.6 }}
-                className="text-neutral-400 mb-6 max-w-2xl leading-relaxed"
-              >
-                {personalInfo.bio}
-              </motion.p>
+                <h2 className="text-xl text-purple-400 font-medium tracking-wider mb-4">
+                  ABOUT ME
+                </h2>
+                <h1 className="text-5xl md:text-7xl font-bold mb-6">
+                  <span className="bg-clip-text text-transparent bg-gradient-to-r from-purple-400 via-pink-500 to-cyan-400">
+                    {personalInfo.name}
+                  </span>
+                </h1>
+                <p className="text-gray-300 text-lg leading-relaxed mb-6">
+                  {personalInfo.bio}
+                </p>
+                <div className="flex items-center gap-4 text-gray-400">
+                  <span className="flex items-center gap-2">
+                    📍 {personalInfo.birthPlace}
+                  </span>
+                </div>
+              </motion.div>
             </div>
-            
+
+            {/* 3D Profile Visual */}
             <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
+              initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.6, delay: 0.3 }}
-              className="relative"
+              transition={{ duration: 0.8, delay: 0.4 }}
+              className="flex-1 relative"
             >
-              <div className="relative w-40 h-40 md:w-48 md:h-48 rounded-full overflow-hidden border border-neutral-800 shadow-2xl bg-neutral-900/80">
-                <Image
-                  src={personalInfo.profileImage}
-                  alt="Satvik Upadhyaya"
-                  fill
-                  className="object-cover"
-                  sizes="(max-width: 768px) 160px, 192px"
-                  priority
-                />
+              <div className="relative w-full aspect-square max-w-md mx-auto">
+                {/* Profile Image Container */}
+                <div className="absolute inset-0 rounded-full overflow-hidden border-4 border-purple-500/30 shadow-2xl shadow-purple-500/50 z-10">
+                  <Image
+                    src={personalInfo.profileImage}
+                    alt={personalInfo.name}
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+                
+                {/* 3D Background Effect */}
+                <div className="absolute inset-0 -z-10 scale-110">
+                  <Suspense fallback={null}>
+                    <ProfileScene3D />
+                  </Suspense>
+                </div>
               </div>
             </motion.div>
           </motion.div>
 
-          {/* Education Timeline */}
+          {/* Education Section */}
           <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.8, delay: 0.5 }}
-            className="mb-20"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+            className="mb-32"
           >
-            <h2 className="text-3xl font-bold mb-10 text-neutral-100 border-b border-neutral-800 pb-4">Education</h2>
+            <h2 className="text-4xl md:text-5xl font-bold mb-16 text-center">
+              <span className="bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-blue-500">
+                Education Journey
+              </span>
+            </h2>
             
-            <div className="relative">
-              {/* Vertical line */}
-              <div className="absolute left-4 top-0 h-full w-0.5 bg-neutral-800"></div>
-              
+            <div className="space-y-8">
               {personalInfo.education.map((edu, idx) => (
                 <motion.div
                   key={idx}
@@ -157,18 +149,26 @@ export default function ExperiencePage() {
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.6, delay: idx * 0.2 }}
-                  className="relative pl-16 pb-10 last:pb-0"
+                  className="group relative bg-gradient-to-br from-purple-900/20 to-cyan-900/20 backdrop-blur-sm rounded-2xl p-8 border border-purple-500/20 hover:border-purple-500/50 transition-all duration-500 hover:scale-[1.02]"
                 >
-                  {/* Icon */}
-                  <div className="absolute left-0 flex items-center justify-center w-8 h-8 rounded-full bg-neutral-800 border border-neutral-700">
-                    <span className="text-sm">🎓</span>
-                  </div>
+                  {/* Glow effect */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-purple-600/0 to-cyan-600/0 group-hover:from-purple-600/10 group-hover:to-cyan-600/10 rounded-2xl transition-all duration-500" />
                   
-                  <div className="rounded-2xl border border-neutral-800 bg-neutral-900/50 backdrop-blur-md p-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
-                    <h3 className="text-xl font-semibold mb-2 text-neutral-100">{edu.institution}</h3>
-                    <p className="text-neutral-400 mb-2">{edu.degree}</p>
-                    <span className="text-sm font-medium text-neutral-500">{edu.period}</span>
+                  <div className="relative z-10">
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="w-12 h-12 bg-gradient-to-br from-cyan-500 to-blue-500 rounded-xl flex items-center justify-center text-2xl">
+                        🎓
+                      </div>
+                      <span className="px-4 py-1 bg-cyan-500/20 rounded-full text-cyan-300 text-sm font-medium">
+                        {edu.period}
+                      </span>
+                    </div>
+                    <h3 className="text-2xl font-bold text-white mb-2">{edu.institution}</h3>
+                    <p className="text-gray-300 text-lg">{edu.degree}</p>
                   </div>
+
+                  {/* Hover line effect */}
+                  <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-cyan-500 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                 </motion.div>
               ))}
             </div>
@@ -222,78 +222,85 @@ export default function ExperiencePage() {
             </div>
           </motion.div>
 
-          {/* Journey Timeline */}
+          {/* Skills Section */}
           <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.8, delay: 0.9 }}
-            className="relative"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+            className="mb-32"
           >
-            <h2 className="text-3xl font-bold mb-10 text-neutral-100 border-b border-neutral-800 pb-4">My Journey Timeline</h2>
+            <h2 className="text-4xl md:text-5xl font-bold mb-16 text-center">
+              <span className="bg-clip-text text-transparent bg-gradient-to-r from-pink-400 to-purple-600">
+                Skills & Expertise
+              </span>
+            </h2>
             
-            <div className="relative pl-8 space-y-12 max-w-2xl mx-auto">
-              {/* Vertical line */}
-              <div className="absolute left-0 top-0 h-full w-0.5 bg-neutral-800"></div>
-              
-              {[
-                {
-                  year: "Birth",
-                  text: `Born in Bokaro, India, where my journey began.`,
-                  icon: "👶",
-                },
-                {
-                  year: "2008",
-                  text: "Started my formal education journey.",
-                  icon: "📚",
-                },
-                {
-                  year: "2024",
-                  text: "Began college studies in Computer Science.",
-                  icon: "🎓",
-                },
-                {
-                  year: "2024 October",
-                  text: "Started web development from scratch.",
-                  icon: "⚙️",
-                },
-                {
-                  year: "2024 December",
-                  text: "Transitioned into full-stack projects with Next.js and Tailwind.",
-                  icon: "🌐",
-                },
-                {
-                  year: "2025",
-                  text: "Focused on scalable apps, authentication, and API integrations.",
-                  icon: "🚀",
-                },
-                {
-                  year: "2025",
-                  text: "Started doing DSA concepts in C++ and learning Python",
-                  icon: "🚀",
-                }
-              ].map((item, idx) => (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {skills.map((skill, idx) => (
                 <motion.div
                   key={idx}
-                  initial={{ opacity: 0, x: -30 }}
-                  whileInView={{ opacity: 1, x: 0 }}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  transition={{ duration: 0.6, delay: idx * 0.15 }}
-                  className="relative flex items-start"
+                  transition={{ duration: 0.6, delay: idx * 0.1 }}
+                  className="group relative bg-gradient-to-br from-purple-900/20 to-pink-900/20 backdrop-blur-sm rounded-2xl p-8 border border-purple-500/20 hover:border-purple-500/50 transition-all duration-500 hover:scale-105 overflow-hidden"
                 >
-                  {/* Marker */}
-                  <div className="absolute -left-9 flex items-center justify-center w-6 h-6 rounded-full bg-neutral-800 border border-neutral-700">
-                    <span className="text-xs">{item.icon}</span>
-                  </div>
+                  {/* Animated gradient background */}
+                  <div className={`absolute inset-0 bg-gradient-to-br ${skill.color} opacity-0 group-hover:opacity-10 transition-opacity duration-500`} />
                   
-                  {/* Content */}
-                  <div className="flex-1">
-                    <p className="text-sm text-neutral-400">
-                      <span className="font-semibold text-neutral-300">{item.year}</span> — {item.text}
-                    </p>
+                  <div className="relative z-10">
+                    <div className="flex items-center gap-4 mb-6">
+                      <div className={`w-14 h-14 bg-gradient-to-br ${skill.color} rounded-xl flex items-center justify-center text-3xl shadow-lg`}>
+                        {skill.icon}
+                      </div>
+                      <h3 className="text-2xl font-bold text-white">
+                        {skill.category}
+                      </h3>
+                    </div>
+                    
+                    <div className="flex flex-wrap gap-3">
+                      {skill.technologies.map((tech, techIdx) => (
+                        <motion.span 
+                          key={techIdx}
+                          initial={{ opacity: 0, scale: 0.8 }}
+                          whileInView={{ opacity: 1, scale: 1 }}
+                          viewport={{ once: true }}
+                          transition={{ duration: 0.3, delay: techIdx * 0.05 }}
+                          className="px-4 py-2 text-sm rounded-full bg-white/10 text-white border border-white/20 hover:bg-white/20 transition-all duration-300"
+                        >
+                          {tech}
+                        </motion.span>
+                      ))}
+                    </div>
                   </div>
+
+                  {/* Corner accent */}
+                  <div className={`absolute top-0 right-0 w-20 h-20 bg-gradient-to-br ${skill.color} opacity-20 blur-2xl group-hover:opacity-40 transition-opacity duration-500`} />
                 </motion.div>
               ))}
             </div>
+          </motion.div>
+
+          {/* CTA Section */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+            className="text-center py-20"
+          >
+            <h2 className="text-4xl md:text-5xl font-bold mb-8">
+              <span className="bg-clip-text text-transparent bg-gradient-to-r from-purple-400 via-pink-500 to-cyan-400">
+                Let's Work Together
+              </span>
+            </h2>
+            <p className="text-gray-400 text-xl mb-10 max-w-2xl mx-auto">
+              Have a project in mind? Let's create something extraordinary.
+            </p>
+            <button className="px-10 py-4 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full text-white text-lg font-semibold hover:shadow-2xl hover:shadow-purple-500/50 transition-all duration-300 hover:scale-110">
+              Get In Touch
+            </button>
           </motion.div>
         </div>
       </div>

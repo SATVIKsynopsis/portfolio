@@ -1,402 +1,247 @@
 "use client";
-import React, { useState, useRef, useEffect } from "react";
-import { motion, useSpring } from "framer-motion";
-import { GridBackgroundDemo } from "@/components/blockbackground";
+
+import React, { useState, Suspense } from "react";
+import { motion } from "framer-motion";
+import dynamic from "next/dynamic";
 import ProjectNavbar from "@/components/navbar";
 import Image from "next/image";
 
+const Scene3DBackground = dynamic(() => import("@/components/3d/Scene3DBackground"), { ssr: false });
+const ProjectScene3D = dynamic(() => import("@/components/3d/ProjectScene3D"), { ssr: false });
+
 const projects = [
   {
-    title: "Adaptive quizzing platform",
+    title: "Adaptive Quizzing Platform",
     description:
       "An AI-powered quiz application that adapts in real-time to each learner's performance. The platform dynamically adjusts question difficulty — from Beginner to Expert — based on user accuracy and response history, ensuring a personalized and engaging learning journey. Built as a responsive, mobile-first SPA with React and Tailwind CSS, and deployed globally on Netlify for seamless accessibility and smooth quiz interactions.",
-    tech: ["Next.js", "MongoDB", "OpenAI API Key", "TailwindCSS"],
+    tech: ["Next.js", "MongoDB", "OpenAI API", "TailwindCSS"],
     link: "https://github.com/SATVIKsynopsis/quiz-adaptable",
     demo: "https://quiztie.netlify.app",
     preview: "/quiztie.png",
+    color: "#8b5cf6",
+    gradient: "from-purple-500 to-pink-500",
   },
   {
-    title: "Vendor to Supplier connecting platform",
+    title: "Vendor to Supplier Platform",
     description:
-      "A full-stack Next.js application with TypeScript and bilingual support (Hindi/English), designed to help street vendors discover BIS/ISO/MSME certified suppliers through advanced search and filtering. Integrated an AI-powered chatbot (OpenAI GPT-3.5) with custom prompts for real-time guidance on certification requirements and supplier verification, boosting trust and engagement. Features include OTP-based authentication, dynamic routing, detailed supplier profiles, and vendor purchase analytics — delivering seamless business connections and smarter decision-making..",
-    tech: [
-      "Next.js",
-      "OpenAI API Key",
-      "AI Chatbot",
-      "Language Support",
-      "TailwindCSS",
-    ],
+      "A full-stack Next.js application with TypeScript and bilingual support (Hindi/English), designed to help street vendors discover BIS/ISO/MSME certified suppliers through advanced search and filtering. Integrated an AI-powered chatbot (OpenAI GPT-3.5) with custom prompts for real-time guidance on certification requirements and supplier verification, boosting trust and engagement. Features include OTP-based authentication, dynamic routing, detailed supplier profiles, and vendor purchase analytics — delivering seamless business connections and smarter decision-making.",
+    tech: ["Next.js", "OpenAI API", "AI Chatbot", "i18n", "TailwindCSS"],
     link: "https://github.com/SATVIKsynopsis/vendor-sahayak",
     demo: "https://vendorsahayak.netlify.app",
     preview: "/vendor.png",
+    color: "#06b6d4",
+    gradient: "from-cyan-500 to-blue-500",
   },
 ];
 
 export default function Projects() {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
-  const [previewPosition, setPreviewPosition] = useState({ top: 0, left: 0 });
-  const projectRefs = useRef<(HTMLDivElement | null)[]>([]);
-
-  useEffect(() => {
-    // Set initial preview position based on the first project card
-    if (projectRefs.current[0]) {
-      const rect = projectRefs.current[0].getBoundingClientRect();
-      setPreviewPosition({
-        top: rect.top - 180,
-        left: rect.left + rect.width / 2 - 160
-      });
-    }
-  }, []);
-
-  const handleHover = (index: number) => {
-    setHoveredIndex(index);
-    
-    // Position the preview above the hovered project card
-    if (projectRefs.current[index]) {
-      const rect = projectRefs.current[index].getBoundingClientRect();
-      setPreviewPosition({
-        top: rect.top - 180,
-        left: rect.left + rect.width / 2 - 160
-      });
-    }
-  };
 
   return (
     <>
       <ProjectNavbar />
-      <div className="relative w-full min-h-screen overflow-hidden">
-        {/* Background Grid */}
-        <GridBackgroundDemo />
+      <div className="relative w-full min-h-screen bg-black text-white overflow-hidden">
+        {/* 3D Background */}
+        <Suspense fallback={<div className="absolute inset-0 bg-gradient-to-b from-black via-purple-900/20 to-black" />}>
+          <Scene3DBackground />
+        </Suspense>
 
-        {/* Subtle overlay */}
-        <div className="absolute inset-0 bg-black/20" />
-
-        {/* Global Preview Image (fixed position above project cards) */}
-        {hoveredIndex !== null && (
+        {/* Content */}
+        <div className="relative z-10 max-w-7xl mx-auto px-6 py-24">
+          {/* Hero Section */}
           <motion.div
-            className="fixed z-50 pointer-events-none"
             initial={{ opacity: 0, y: 20 }}
-            animate={{
-              opacity: 1,
-              y: 0,
-            }}
-            exit={{ opacity: 0, y: 20 }}
-            transition={{ duration: 0.3, ease: "easeOut" }}
-            style={{
-              top: `${previewPosition.top}px`,
-              left: `${previewPosition.left}px`,
-            }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="text-center mb-24"
           >
-            <div className="relative">
-              {/* Glow effect */}
-              <div className="absolute inset-0 bg-white/20 rounded-xl blur-lg" />
-
-              {/* Image container */}
-              <div className="relative rounded-xl overflow-hidden border border-white/30 backdrop-blur-md shadow-2xl">
-                <Image
-                  src={projects[hoveredIndex].preview}
-                  alt={`${projects[hoveredIndex].title} preview`}
-                  width={320}
-                  height={192}
-                  className="w-80 h-48 object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
-                <div className="absolute bottom-3 left-3 text-white text-sm font-medium">
-                  {projects[hoveredIndex].title}
-                </div>
-              </div>
-            </div>
+            <h2 className="text-xl text-purple-400 font-medium tracking-wider mb-4">
+              MY WORK
+            </h2>
+            <h1 className="text-5xl md:text-7xl font-bold mb-8">
+              <span className="bg-clip-text text-transparent bg-gradient-to-r from-purple-400 via-pink-500 to-cyan-400">
+                Featured Projects
+              </span>
+            </h1>
+            <p className="text-gray-300 text-xl max-w-3xl mx-auto leading-relaxed">
+              Explore my portfolio of innovative solutions that combine cutting-edge technology 
+              with exceptional user experiences.
+            </p>
           </motion.div>
-        )}
 
-        {/* Foreground Content */}
-        <div className="absolute inset-0 flex items-center justify-center px-6 py-20">
-          <div className="w-full max-w-6xl">
-            {/* Section Header */}
-            <motion.div
-              className="text-center mb-16"
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
-            >
-              <motion.h2
-                className="text-5xl md:text-6xl font-black mb-4 text-white"
-                initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.8, delay: 0.2 }}
-              >
-                Featured <span className="text-white/60">Projects</span>
-              </motion.h2>
-              <motion.p
-                className="text-lg text-slate-300 max-w-2xl mx-auto mb-6"
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.4 }}
-              >
-                Explore my latest work in web development, featuring modern
-                technologies and innovative solutions that push the boundaries
-                of user experience.
-              </motion.p>
+          {/* Projects Grid */}
+          <div className="space-y-32">
+            {projects.map((project, index) => (
               <motion.div
-                className="w-20 h-0.5 bg-white/60 mx-auto"
-                initial={{ width: 0 }}
-                animate={{ width: "5rem" }}
-                transition={{ duration: 0.6, delay: 0.6 }}
-              />
-            </motion.div>
+                key={index}
+                initial={{ opacity: 0, y: 50 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.8, delay: index * 0.2 }}
+                className="relative"
+              >
+                <div className={`flex flex-col ${index % 2 === 0 ? 'lg:flex-row' : 'lg:flex-row-reverse'} gap-12 items-center`}>
+                  {/* Project Image with 3D Effect */}
+                  <div 
+                    className="flex-1 relative group"
+                    onMouseEnter={() => setHoveredIndex(index)}
+                    onMouseLeave={() => setHoveredIndex(null)}
+                  >
+                    <div className="relative aspect-video rounded-2xl overflow-hidden border-2 border-purple-500/30 shadow-2xl shadow-purple-500/20">
+                      {/* 3D Background */}
+                      <div className="absolute inset-0 opacity-30">
+                        <Suspense fallback={null}>
+                          <ProjectScene3D color={project.color} />
+                        </Suspense>
+                      </div>
+                      
+                      {/* Project Image */}
+                      <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-all duration-500">
+                        <Image
+                          src={project.preview}
+                          alt={project.title}
+                          fill
+                          className="object-cover opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all duration-700"
+                        />
+                      </div>
 
-            {/* Projects Grid */}
-            <div className="grid gap-8 md:grid-cols-2 w-full">
-              {projects.map((project, index) => (
-                <div
-                  key={index}
-                  ref={(el) => (projectRefs.current[index] = el)}
-                >
-                  <ProjectCard
-                    project={project}
-                    index={index}
-                    isHovered={hoveredIndex === index}
-                    onHover={() => handleHover(index)}
-                    onLeave={() => setHoveredIndex(null)}
-                  />
+                      {/* Hover Overlay */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-end justify-center pb-8">
+                        <div className="flex gap-4">
+                          <a
+                            href={project.demo}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="px-6 py-3 bg-white/10 backdrop-blur-md rounded-full text-white font-medium hover:bg-white/20 transition-all duration-300 border border-white/20"
+                          >
+                            Live Demo →
+                          </a>
+                          <a
+                            href={project.link}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="px-6 py-3 bg-white/10 backdrop-blur-md rounded-full text-white font-medium hover:bg-white/20 transition-all duration-300 border border-white/20"
+                          >
+                            GitHub →
+                          </a>
+                        </div>
+                      </div>
+
+                      {/* Glow effect */}
+                      <div className={`absolute inset-0 bg-gradient-to-br ${project.gradient} opacity-0 group-hover:opacity-20 blur-2xl transition-all duration-500`} />
+                    </div>
+                  </div>
+
+                  {/* Project Details */}
+                  <div className="flex-1 space-y-6">
+                    <div>
+                      <motion.h3 
+                        className="text-3xl md:text-4xl font-bold mb-4"
+                        initial={{ opacity: 0, x: index % 2 === 0 ? -20 : 20 }}
+                        whileInView={{ opacity: 1, x: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.6, delay: 0.2 }}
+                      >
+                        <span className={`bg-clip-text text-transparent bg-gradient-to-r ${project.gradient}`}>
+                          {project.title}
+                        </span>
+                      </motion.h3>
+                      
+                      <motion.p 
+                        className="text-gray-300 leading-relaxed text-lg"
+                        initial={{ opacity: 0, x: index % 2 === 0 ? -20 : 20 }}
+                        whileInView={{ opacity: 1, x: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.6, delay: 0.3 }}
+                      >
+                        {project.description}
+                      </motion.p>
+                    </div>
+
+                    {/* Tech Stack */}
+                    <motion.div 
+                      className="flex flex-wrap gap-3"
+                      initial={{ opacity: 0, y: 20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.6, delay: 0.4 }}
+                    >
+                      {project.tech.map((tech: string, techIdx: number) => (
+                        <span
+                          key={techIdx}
+                          className={`px-4 py-2 rounded-full bg-gradient-to-r ${project.gradient} bg-opacity-10 border border-white/20 text-white text-sm font-medium hover:scale-110 transition-transform duration-300`}
+                        >
+                          {tech}
+                        </span>
+                      ))}
+                    </motion.div>
+
+                    {/* Links */}
+                    <motion.div 
+                      className="flex gap-4"
+                      initial={{ opacity: 0, y: 20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.6, delay: 0.5 }}
+                    >
+                      <a
+                        href={project.demo}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={`px-8 py-3 bg-gradient-to-r ${project.gradient} rounded-full text-white font-semibold hover:shadow-2xl hover:shadow-purple-500/50 transition-all duration-300 hover:scale-105`}
+                      >
+                        View Live
+                      </a>
+                      <a
+                        href={project.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="px-8 py-3 border-2 border-purple-500 rounded-full text-white font-semibold hover:bg-purple-500/20 transition-all duration-300"
+                      >
+                        Source Code
+                      </a>
+                    </motion.div>
+                  </div>
                 </div>
-              ))}
-            </div>
+
+                {/* Decorative elements */}
+                {index === 0 && (
+                  <div className="absolute -top-20 -left-20 w-40 h-40 bg-purple-500 rounded-full blur-[100px] opacity-20 animate-pulse" />
+                )}
+                {index === 1 && (
+                  <div className="absolute -bottom-20 -right-20 w-40 h-40 bg-cyan-500 rounded-full blur-[100px] opacity-20 animate-pulse" />
+                )}
+              </motion.div>
+            ))}
           </div>
+
+          {/* CTA Section */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+            className="text-center py-32"
+          >
+            <h2 className="text-4xl md:text-5xl font-bold mb-8">
+              <span className="bg-clip-text text-transparent bg-gradient-to-r from-purple-400 via-pink-500 to-cyan-400">
+                Want to see more?
+              </span>
+            </h2>
+            <p className="text-gray-400 text-xl mb-10 max-w-2xl mx-auto">
+              Check out my GitHub for additional projects and open-source contributions.
+            </p>
+            <a
+              href="https://github.com/SATVIKsynopsis"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-block px-10 py-4 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full text-white text-lg font-semibold hover:shadow-2xl hover:shadow-purple-500/50 transition-all duration-300 hover:scale-110"
+            >
+              Visit GitHub
+            </a>
+          </motion.div>
         </div>
       </div>
     </>
-  );
-}
-
-const ProjectCard = ({
-  project,
-  index,
-  isHovered,
-  onHover,
-  onLeave,
-}: {
-  project: any;
-  index: number;
-  isHovered: boolean;
-  onHover: () => void;
-  onLeave: () => void;
-}) => {
-  const rotateX = useSpring(0, { stiffness: 300, damping: 30 });
-  const rotateY = useSpring(0, { stiffness: 300, damping: 30 });
-
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (!isHovered) return;
-
-    const rect = e.currentTarget.getBoundingClientRect();
-    const centerX = rect.left + rect.width / 2;
-    const centerY = rect.top + rect.height / 2;
-
-    const maxRotation = 15;
-    const rotX = ((e.clientY - centerY) / rect.height) * -maxRotation;
-    const rotY = ((e.clientX - centerX) / rect.width) * maxRotation;
-
-    rotateX.set(rotX);
-    rotateY.set(rotY);
-  };
-
-  const handleMouseLeave = () => {
-    rotateX.set(0);
-    rotateY.set(0);
-    onLeave();
-  };
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 50 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6, delay: index * 0.2 }}
-      className="group cursor-pointer relative"
-      style={{ perspective: "1000px" }}
-    >
-      {/* Main Card */}
-      <motion.div
-        style={{
-          rotateX,
-          rotateY,
-          transformStyle: "preserve-3d",
-        }}
-        onMouseMove={handleMouseMove}
-        onMouseEnter={onHover}
-        onMouseLeave={handleMouseLeave}
-        whileHover={{ scale: 1.02 }}
-        transition={{ duration: 0.3, ease: "easeOut" }}
-        className="relative rounded-2xl bg-black/40 backdrop-blur-sm border border-white/10 shadow-xl p-6 h-full overflow-hidden"
-      >
-        {/* Subtle gradient highlight */}
-        <motion.div
-          className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-          style={{
-            background:
-              "linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 50%, rgba(255,255,255,0.08) 100%)",
-            transform: "translateZ(1px)",
-          }}
-        />
-
-        {/* Grid pattern overlay */}
-        <div
-          className="absolute inset-0 opacity-10"
-          style={{ transform: "translateZ(1px)" }}
-        >
-          <svg width="100%" height="100%" className="overflow-visible">
-            <defs>
-              <pattern
-                id={`grid-${index}`}
-                width="40"
-                height="40"
-                patternUnits="userSpaceOnUse"
-              >
-                <path
-                  d="M 40 0 L 0 0 0 40"
-                  fill="none"
-                  stroke="white"
-                  strokeWidth="1"
-                />
-              </pattern>
-            </defs>
-            <rect width="100%" height="100%" fill={`url(#grid-${index})`} />
-          </svg>
-        </div>
-
-        {/* Floating dot indicators */}
-        <div
-          className="absolute top-4 right-4 flex gap-1"
-          style={{ transform: "translateZ(2px)" }}
-        >
-          {[...Array(3)].map((_, i) => (
-            <motion.div
-              key={i}
-              className="w-2 h-2 rounded-full bg-white/40"
-              animate={{
-                scale: isHovered ? [1, 1.2, 1] : 1,
-                opacity: isHovered ? [0.4, 0.8, 0.4] : 0.4,
-              }}
-              transition={{
-                duration: 1.5,
-                delay: i * 0.2,
-                repeat: isHovered ? Infinity : 0,
-              }}
-            />
-          ))}
-        </div>
-
-        {/* Content */}
-        <div className="relative z-10" style={{ transform: "translateZ(5px)" }}>
-          <motion.h3
-            className="text-2xl font-bold text-white mb-3"
-            initial={{ opacity: 0, x: -20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            transition={{ delay: index * 0.2 + 0.1 }}
-          >
-            {project.title}
-          </motion.h3>
-
-          <motion.p
-            className="text-slate-300 mb-6 leading-relaxed"
-            initial={{ opacity: 0, x: -20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            transition={{ delay: index * 0.2 + 0.2 }}
-          >
-            {project.description}
-          </motion.p>
-
-          {/* Tech Stack */}
-          <motion.div
-            className="flex flex-wrap gap-2 mb-6"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.2 + 0.3 }}
-          >
-            {project.tech.map((tech: string, i: number) => (
-              <motion.span
-                key={i}
-                className="px-3 py-1 text-sm rounded-full bg-white/10 text-white border border-white/5 backdrop-blur-sm"
-                whileHover={{
-                  scale: 1.05,
-                  backgroundColor: "rgba(255,255,255,0.15)",
-                  y: -2,
-                }}
-                initial={{ opacity: 0, scale: 0.8 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                transition={{
-                  delay: index * 0.2 + 0.4 + i * 0.1,
-                  type: "spring",
-                  stiffness: 200,
-                }}
-              >
-                {tech}
-              </motion.span>
-            ))}
-          </motion.div>
-
-          {/* Project Links */}
-          <motion.div
-            className="flex gap-3"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.2 + 0.5 }}
-          >
-            <motion.a
-              href={project.link}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group/btn relative inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-white/10 hover:bg-white/20 text-white font-medium transition-all duration-300 border border-white/10 backdrop-blur-sm overflow-hidden"
-              whileHover={{ scale: 1.02, y: -2 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              <motion.div
-                className="absolute inset-0 bg-white/10"
-                initial={{ x: "-100%" }}
-                whileHover={{ x: "0%" }}
-                transition={{ duration: 0.3, ease: "easeInOut" }}
-              />
-
-              <span className="relative z-10">View Code</span>
-              <motion.span
-                className="relative z-10"
-                animate={{
-                  x: isHovered ? 3 : 0,
-                }}
-                transition={{ duration: 0.2 }}
-              >
-                ↗
-              </motion.span>
-            </motion.a>
-
-            <motion.a
-              href={project.demo}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group/btn relative inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-white/15 hover:bg-white/25 text-white font-medium transition-all duration-300 border border-white/20 backdrop-blur-sm overflow-hidden"
-              whileHover={{ scale: 1.02, y: -2 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              <motion.div
-                className="absolute inset-0 bg-white/10"
-                initial={{ x: "-100%" }}
-                whileHover={{ x: "0%" }}
-                transition={{ duration: 0.3, ease: "easeInOut" }}
-              />
-
-              <span className="relative z-10">Live Demo</span>
-              <motion.span
-                className="relative z-10"
-                animate={{
-                  x: isHovered ? 3 : 0,
-                }}
-                transition={{ duration: 0.2 }}
-              >
-                →
-              </motion.span>
-            </motion.a>
-          </motion.div>
-        </div>
-      </motion.div>
-    </motion.div>
   );
 }
