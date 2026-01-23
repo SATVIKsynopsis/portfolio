@@ -5,7 +5,9 @@ import React, { Suspense } from "react";
 import Image from "next/image";
 import dynamic from "next/dynamic";
 import ProjectNavbar from "@/components/navbar";
+import { CanvasTexture } from "three";
 
+const CustomCursor = dynamic(() => import("@/components/effects/CustomCursor"), { ssr: false });
 const ProfileScene3D = dynamic(() => import("@/components/3d/ProfileScene3D"), { ssr: false });
 const Scene3DBackground = dynamic(() => import("@/components/3d/Scene3DBackground"), { ssr: false });
 
@@ -23,22 +25,29 @@ const skills = [
     color: "from-cyan-500 to-blue-500",
   },
   {
+    category: "Infra",
+    technologies: ["Docker", "CI/CD","Linux"],
+    icon: "☁️",
+    color: "from-green-500 to-teal-500",
+  },
+  {
     category: "Tools & Technologies",
     technologies: ["Git", "VS Code", "Figma", "Webstorm", "Pycharm", "Clion"],
     icon: "🛠️",
     color: "from-pink-500 to-rose-500",
   },
+ 
   {
-    category: "DSA",
-    technologies: ["C", "C++", "Python"],
-    icon: "🧮",
+    category: "Currently Learning",
+    technologies: ["Rust"],
+    icon: "📚",
     color: "from-yellow-500 to-orange-500",
   }
 ];
 
 const personalInfo = {
   name: "Satvik Upadhyaya",
-  birthPlace: "New Delhi, India",
+  birthPlace: "Bokaro, India",
   education: [
     {
       institution: "Kalinga Institute of Industrial Technology",
@@ -58,6 +67,7 @@ const personalInfo = {
 export default function AboutPage() {
   return (
     <>  
+      <CustomCursor />
       <ProjectNavbar />
       <div className="relative min-h-screen w-full bg-black text-white overflow-hidden">
         {/* 3D Background */}
@@ -175,54 +185,6 @@ export default function AboutPage() {
           </motion.div>
 
           {/* Skills & Expertise Section */}
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.8, delay: 0.7 }}
-            className="mb-20"
-          >
-            <h2 className="text-3xl font-bold mb-10 text-neutral-100 border-b border-neutral-800 pb-4">Skills & Expertise</h2>
-            
-            <div className="grid md:grid-cols-3 gap-8">
-              {skills.map((skill, idx) => (
-                <motion.div
-                  key={idx}
-                  initial={{ opacity: 0, y: 40 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.6, delay: idx * 0.2 }}
-                  className="rounded-2xl border border-neutral-800 bg-neutral-900/50 
-                            backdrop-blur-md p-6 shadow-lg hover:shadow-xl 
-                            hover:-translate-y-1 transition-all duration-300 group relative overflow-hidden"
-                >
-                  {/* Background effect */}
-                  <div className="absolute inset-0 bg-neutral-800/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                  
-                  <div className="relative z-10">
-                    <div className="flex items-center justify-between mb-4">
-                      <h3 className="text-xl font-semibold text-neutral-100">
-                        {skill.category}
-                      </h3>
-                      <span className="text-2xl">{skill.icon}</span>
-                    </div>
-                    
-                    <div className="flex flex-wrap gap-2">
-                      {skill.technologies.map((tech, techIdx) => (
-                        <span 
-                          key={techIdx}
-                          className="px-3 py-1 text-xs rounded-full bg-neutral-800 text-neutral-300 border border-neutral-700"
-                        >
-                          {tech}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          </motion.div>
-
-          {/* Skills Section */}
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}

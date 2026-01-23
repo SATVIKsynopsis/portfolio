@@ -25,7 +25,7 @@ export default function CustomCursor() {
   return (
     <>
       <div
-        className="fixed pointer-events-none z-50 mix-blend-difference"
+        className="fixed pointer-events-none z-50"
         style={{
           left: `${position.x}px`,
           top: `${position.y}px`,
@@ -37,12 +37,13 @@ export default function CustomCursor() {
             isPointer ? "w-12 h-12" : "w-6 h-6"
           }`}
           style={{
-            boxShadow: "0 0 20px rgba(255, 255, 255, 0.5)",
+            boxShadow: "0 0 20px rgba(255, 255, 255, 0.8), 0 0 0 1px rgba(0, 0, 0, 0.2)",
+            border: "1px solid rgba(0, 0, 0, 0.1)",
           }}
         />
       </div>
       <div
-        className="fixed pointer-events-none z-50 mix-blend-difference"
+        className="fixed pointer-events-none z-50"
         style={{
           left: `${position.x}px`,
           top: `${position.y}px`,
@@ -50,7 +51,7 @@ export default function CustomCursor() {
           transition: "all 0.3s cubic-bezier(0.75, -0.5, 0.25, 1.5)",
         }}
       >
-        <div className="w-2 h-2 bg-white rounded-full" />
+        <div className="w-2 h-2 bg-white rounded-full" style={{ boxShadow: "0 0 0 1px rgba(0, 0, 0, 0.2)" }} />
       </div>
     </>
   );

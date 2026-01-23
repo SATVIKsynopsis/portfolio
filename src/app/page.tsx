@@ -6,11 +6,13 @@ import { motion, useTransform } from "framer-motion";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls, Sphere, Float, MeshDistortMaterial, Environment, PerspectiveCamera, useScroll } from "@react-three/drei";
 import * as THREE from "three";
-import { useRef } from "react";
+import { useRef, useState } from "react";
+import { X, Mail, Phone, MapPin, Send, Github, Linkedin, Twitter } from 'lucide-react';
 import ProjectNavbar from "@/components/navbar";
 import { useLenisScroll } from "@/hooks/useLenisScroll";
 import TextScramble from "@/components/effects/TextScramble";
 import MagneticButton from "@/components/effects/MagneticButton";
+import Link from "next/link";
 
 const CustomCursor = dynamic(() => import("@/components/effects/CustomCursor"), { ssr: false });
 
@@ -102,6 +104,18 @@ function Particles() {
 
 export default function Home() {
   const { scrollProgress } = useLenisScroll();
+  const [isContactOpen, setIsContactOpen] = useState(false);
+
+  const contactInfo = {
+    email: "futureiitianisme@gmail.com",
+    phone: "+91 9942575131",
+    location: "Bokaro, India",
+    social: {
+      github: "https://github.com/SATVIKsynopsis",
+      linkedin: "https://www.linkedin.com/in/satvik-upadhyaya-073978334/",
+      twitter: "https://x.com/SatvikUpadhyaya"
+    }
+  };
 
   return (
     <>
@@ -176,16 +190,20 @@ export default function Home() {
               transition={{ duration: 0.8, delay: 0.9 }}
               className="flex flex-col sm:flex-row gap-6 justify-center items-center"
             >
+              <Link href="/projects">
               <MagneticButton className="group px-8 py-4 bg-white text-black rounded-full font-semibold text-lg hover:bg-gray-100 transition-colors duration-300 shadow-2xl shadow-white/20">
                 <span className="flex items-center gap-2">
                   View Projects
                   <span className="group-hover:translate-x-1 transition-transform duration-300">→</span>
                 </span>
               </MagneticButton>
-
+              </Link>
+              
+              <Link href="/about">
               <MagneticButton className="px-8 py-4 border-2 border-white/20 text-white rounded-full font-semibold text-lg hover:bg-white/10 backdrop-blur-sm transition-all duration-300">
-                Contact Me
+                About me
               </MagneticButton>
+              </Link>
             </motion.div>
           </motion.div>
         </div>
@@ -303,7 +321,10 @@ export default function Home() {
             <p className="text-xl text-gray-400 mb-12 max-w-2xl mx-auto">
               Have a project in mind? Let's collaborate and create something amazing together.
             </p>
-            <MagneticButton className="px-12 py-5 bg-white text-black rounded-full font-bold text-lg hover:bg-gray-100 transition-colors duration-300 shadow-2xl shadow-white/20">
+            <MagneticButton 
+              onClick={() => setIsContactOpen(true)}
+              className="px-12 py-5 bg-white text-black rounded-full font-bold text-lg hover:bg-gray-100 transition-colors duration-300 shadow-2xl shadow-white/20"
+            >
               <span className="flex items-center gap-2">
                 Get In Touch
                 <span>→</span>
@@ -313,15 +334,118 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Contact Popup Modal */}
+      {isContactOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+          <div className="relative bg-neutral-900/95 border border-neutral-800 rounded-2xl shadow-2xl max-w-md w-full overflow-hidden">
+            {/* Close Button */}
+            <button
+              onClick={() => setIsContactOpen(false)}
+              className="absolute top-4 right-4 p-2 rounded-lg bg-neutral-800/50 hover:bg-neutral-700/50 transition-colors duration-200"
+            >
+              <X className="w-5 h-5 text-neutral-400" />
+            </button>
+
+            {/* Header */}
+            <div className="p-6 border-b border-neutral-800">
+              <h2 className="text-2xl font-bold text-neutral-100 mb-2">Get In Touch</h2>
+              <p className="text-neutral-400">Let's work together on your next project</p>
+            </div>
+
+            {/* Contact Info */}
+            <div className="p-6 space-y-4">
+              {/* Email */}
+              <div className="flex items-center space-x-3 p-3 rounded-xl bg-neutral-800/50 border border-neutral-700/30">
+                <Mail className="w-5 h-5 text-neutral-400 flex-shrink-0" />
+                <div>
+                  <p className="text-sm text-neutral-400">Email</p>
+                  <a 
+                    href={`mailto:${contactInfo.email}`} 
+                    className="text-neutral-200 hover:text-neutral-100 transition-colors"
+                  >
+                    {contactInfo.email}
+                  </a>
+                </div>
+              </div>
+
+              {/* Phone */}
+              <div className="flex items-center space-x-3 p-3 rounded-xl bg-neutral-800/50 border border-neutral-700/30">
+                <Phone className="w-5 h-5 text-neutral-400 flex-shrink-0" />
+                <div>
+                  <p className="text-sm text-neutral-400">Phone</p>
+                  <a 
+                    href={`tel:${contactInfo.phone}`} 
+                    className="text-neutral-200 hover:text-neutral-100 transition-colors"
+                  >
+                    {contactInfo.phone}
+                  </a>
+                </div>
+              </div>
+
+              {/* Location */}
+              <div className="flex items-center space-x-3 p-3 rounded-xl bg-neutral-800/50 border border-neutral-700/30">
+                <MapPin className="w-5 h-5 text-neutral-400 flex-shrink-0" />
+                <div>
+                  <p className="text-sm text-neutral-400">Location</p>
+                  <p className="text-neutral-200">{contactInfo.location}</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Social Links */}
+            <div className="p-6 border-t border-neutral-800">
+              <p className="text-neutral-400 mb-3 text-sm">Follow me on</p>
+              <div className="flex space-x-3">
+                <a
+                  href={contactInfo.social.github}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-2 bg-neutral-800/50 hover:bg-neutral-700/50 rounded-lg border border-neutral-700/30 transition-colors duration-200"
+                >
+                  <Github className="w-5 h-5 text-neutral-400" />
+                </a>
+                <a
+                  href={contactInfo.social.linkedin}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-2 bg-neutral-800/50 hover:bg-neutral-700/50 rounded-lg border border-neutral-700/30 transition-colors duration-200"
+                >
+                  <Linkedin className="w-5 h-5 text-neutral-400" />
+                </a>
+                <a
+                  href={contactInfo.social.twitter}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-2 bg-neutral-800/50 hover:bg-neutral-700/50 rounded-lg border border-neutral-700/30 transition-colors duration-200"
+                >
+                  <Twitter className="w-5 h-5 text-neutral-400" />
+                </a>
+              </div>
+            </div>
+
+            {/* Action Button */}
+            <div className="p-6 border-t border-neutral-800">
+              <a
+                href={`mailto:${contactInfo.email}`}
+                className="w-full flex items-center justify-center space-x-2 px-4 py-3 bg-neutral-800 hover:bg-neutral-700 text-neutral-200 rounded-xl font-medium border border-neutral-700 transition-all duration-300 hover:scale-105"
+              >
+                <Send className="w-4 h-4" />
+                <span>Send Message</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Footer */}
       <footer className="relative py-12 border-t border-white/10 bg-black z-10">
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex flex-col md:flex-row justify-between items-center gap-6">
             <p className="text-gray-500">© 2026 Satvik Upadhyaya. All rights reserved.</p>
             <div className="flex gap-6">
-              <a href="#" className="text-gray-500 hover:text-white transition-colors duration-300">GitHub</a>
-              <a href="#" className="text-gray-500 hover:text-white transition-colors duration-300">LinkedIn</a>
-              <a href="#" className="text-gray-500 hover:text-white transition-colors duration-300">Twitter</a>
+              <a href="https://github.com/SATVIKsynopsis" className="text-gray-500 hover:text-white transition-colors duration-300">GitHub</a>
+              <a href="https://www.linkedin.com/in/satvik-upadhyaya-073978334/" className="text-gray-500 hover:text-white transition-colors duration-300">LinkedIn</a>
+              <a href="https://x.com/SatvikUpadhyaya" className="text-gray-500 hover:text-white transition-colors duration-300">Twitter</a>
             </div>
           </div>
         </div>

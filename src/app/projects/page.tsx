@@ -6,6 +6,7 @@ import dynamic from "next/dynamic";
 import ProjectNavbar from "@/components/navbar";
 import Image from "next/image";
 
+const CustomCursor = dynamic(() => import("@/components/effects/CustomCursor"), { ssr: false });
 const Scene3DBackground = dynamic(() => import("@/components/3d/Scene3DBackground"), { ssr: false });
 const ProjectScene3D = dynamic(() => import("@/components/3d/ProjectScene3D"), { ssr: false });
 
@@ -39,6 +40,7 @@ export default function Projects() {
 
   return (
     <>
+      <CustomCursor />
       <ProjectNavbar />
       <div className="relative w-full min-h-screen bg-black text-white overflow-hidden">
         {/* 3D Background */}
